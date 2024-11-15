@@ -1,0 +1,226 @@
+.App {
+  text-align: center;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.App-logo {
+  height: 80px;
+}
+
+input {
+  border: 1px solid #1e8678;
+}
+
+.show-body {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.App-header {
+  background-color: #1e8678;
+  height: 200px;
+  padding: 20px;
+  color: #222;
+}
+
+.App-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+}
+
+cite {
+  font-weight: bold;
+}
+
+table {
+  align-content: center;
+  margin: auto;
+}
+
+td {
+  padding: 10px;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.cap-first-letter:first-letter {
+  text-transform: capitalize;
+}
+
+.col-sm-6,
+col-md-4 {
+  border: 1px;
+}
+
+.hometext {
+  max-width: 60%;
+}
+
+.link {
+  padding: 10px;
+  background-color: white;
+  border-radius: 3px;
+  color: #1e8678;
+  font-weight: bold;
+  text-decoration: none !important;
+  margin: 20px;
+}
+
+.link:hover {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.homeLink {
+  padding: 10px;
+  background-color: white;
+  border-radius: 3px;
+  color: #1e8678;
+
+  text-decoration: none !important;
+  margin: 20px;
+}
+
+.homeLink:hover {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.sublink {
+  padding: 1px;
+  background-color: white;
+  border-radius: 3px;
+  color: unset;
+  text-decoration: none !important;
+  margin: 1px;
+}
+
+
+li {
+  padding: 1px;
+}
+
+p {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.homePara {
+  text-align: center;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+div {
+  text-align: center;
+}
+
+a {
+  color: #1e8678;
+  text-decoration: none !important;
+}
+
+.facebookIcon {
+  color: #316FF6;
+  text-decoration: none !important;
+}
+
+.instagramIcon {
+  color: unset;
+  text-decoration: none !important;
+}
+
+.youtubeIcon {
+  color: #FF0000;
+  text-decoration: none !important;
+}
+
+.twitterIcon {
+  color: #1DA1F2;
+  text-decoration: none !important;
+}
+
+ul a:hover {
+  background-color: transparent;
+  color: blue;
+}
+
+ul {
+  list-style: none;
+}
+
+.title {
+  font-weight: bold;
+  color: #1e8678;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input {
+    font-size: 16px;
+  }
+}
+
+dt,
+dl {
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+dt {
+  display: inline-block;
+}
+
+dd {
+  display: inline;
+  margin-left: 5px;
+}
+
+h1,
+h2,
+h3,
+h5 {
+  color: #1e8678;
+}
+
+button {
+  padding: 10px;
+  background-color: #1e8678;
+  border-radius: 3px;
+  color: white;
+  text-decoration: none !important;
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
+button:hover {
+  padding: 10px;
+  background-color: white;
+  border-radius: 3px;
+  color: #28547a;
+  text-decoration: none !important;
+}
+
+.homeBold {
+  color: #1e8678;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}

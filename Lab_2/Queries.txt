@@ -1,0 +1,4 @@
+1. Should there be a handlebar or just test from postman - test from postman
+2. '/api/move/' or '/api/move' - are both valid uri's - same
+3. Pokemon history api - do we store the entire pokemon object or just the name? -entire data
+4. Higher limit on id? - not required unless third party api gives appropriate response

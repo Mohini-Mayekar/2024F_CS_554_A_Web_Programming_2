@@ -1,0 +1,39 @@
+1. booksByGenre -> no books found what should be done ? throw error or return an empty array
+2. publishersByEstablishedYear - > spec says - For the range, just make sure min > 0, make sure that max is >= min and make sure that max cannot be greater than 5 years from the current year.
+    should we also be checking that the length is 4 for year?
+3. Can searchTerm be an empty string?
+4. What do we return after deleteing author/pub/book ?
+5. What happens to publisher and authorById in cache when we delete the add/edit/remove book? do we update the cache or delete it from cache?
+6. Is clearing the cache same as deleting the key?
+7. Remove book - clears the redsi cache => flushall ?
+8. Cache chapterById?
+9. Valid book name and chapter title?
+10. valid date - Do we have to validate for leap year?
+11. Edit book : chapters array passed in => delete existing chapters of that book and then add the passed chapters?
+
+
+
+12. Chapter Titles should be unique!!! => Is this for a book or entire chapters document
+13. Do we need to validate location in Publisher?
+
+add books array in author, Publisher
+
+
+1. If implementing extra credit, then do we have to cache getChaptersByBookId?
+2. If implementing extra credit, should the addBook and editBook mutations still contain the chapters argument or will it be set as an empty array?
+3. 
+
+
+
+n= even 
+
+n = 8
+n/2  = 4
+n/2 = 2
+
+n== 2  ==> return a*a
+
+n= odd
+
+convert it into even and then follow the same process
+
