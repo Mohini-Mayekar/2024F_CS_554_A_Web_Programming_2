@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import { useQuery, useMutation } from '@apollo/client';
 //Import the file where my query constants are defined
 import queries from '../queries';
+import { Button, Typography, Box, TextField } from '@mui/material';
 
 //For react-modal
 ReactModal.setAppElement('#root');
@@ -53,7 +54,11 @@ function EditAuthorModal(props) {
                 contentLabel='Edit Author'
                 style={customStyles}
             >
+                <Typography variant="h5" gutterBottom>
+                    Edit Author
+                </Typography>
                 <form
+
                     className='form'
                     id='add-author'
                     onSubmit={(e) => {
@@ -78,71 +83,62 @@ function EditAuthorModal(props) {
                         props.handleClose();
                     }}
                 >
-                    <div className='form-group'>
-                        <label>
-                            Name:
-                            <br />
-                            <input
-                                ref={(node) => {
-                                    name = node;
-                                }}
-                                defaultValue={author.name}
-                                autoFocus={true}
-                            />
-                        </label>
-                    </div>
-                    <br />
-                    <div className='form-group'>
-                        <label>
-                            Bio:
-                            <br />
-                            <input
-                                ref={(node) => {
-                                    bio = node;
-                                }}
-                                defaultValue={author.bio}
-                            />
-                        </label>
-                    </div>
-                    <br />
+                    <Box display="flex" flexDirection="column" gap={3}>
+                        <TextField
+                            label="Name"
+                            name="name"
+                            defaultValue={author.name}
+                            variant="outlined"
+                            fullWidth
+                            required
+                        />
 
-                    <div className='form-group'>
-                        <label>
-                            Date of Birth:
-                            <input
-                                ref={(node) => {
-                                    dateOfBirth = node;
-                                }}
-                                defaultValue={author.dateOfBirth}
-                            />
-                            {/* <select
-                                defaultValue={author.employer._id}
-                                className='form-control'
-                                ref={(node) => {
-                                    dateOfBirth = node;
-                                }}
+                        <TextField
+                            label="Bio"
+                            name="bio"
+                            defaultValue={author.bio}
+                            variant="outlined"
+                            multiline
+                            rows={3}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label="Date of Birth"
+                            name="dateOfBirth"
+                            type="date"
+                            defaultValue={author.dateOfBirth ? new Date(author.dateOfBirth).toISOString().split('T')[0] : ''}
+                            variant="outlined"
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            required
+                        />
+
+                        <Box display="flex" justifyContent="flex-end" gap={2}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                type="submit"
                             >
-                                {employers &&
-                                    employers.map((employer) => {
-                                        return (
-                                            <option key={employer._id} value={employer._id}>
-                                                {employer.name}
-                                            </option>
-                                        );
-                                    })}
-                            </select> */}
-                        </label>
-                    </div>
-                    <br />
-                    <br />
-                    <button className='button add-button' type='submit'>
-                        Update Author
-                    </button>
+                                Update Author
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="string"
+                                onClick={handleCloseEditModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Box>
+
                 </form>
 
-                <button className='button cancel-button' onClick={handleCloseEditModal}>
+                {/* <button className='button cancel-button' onClick={handleCloseEditModal}>
                     Cancel
-                </button>
+                </button> */}
             </ReactModal>
         </div>
     );

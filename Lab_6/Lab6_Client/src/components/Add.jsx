@@ -4,6 +4,7 @@ import React from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 //Import the file where my query constants are defined
 import queries from '../queries';
+import { Button, Typography, Box, TextField, Card } from '@mui/material';
 
 function Add(props) {
   const [addAuthor] = useMutation(queries.ADD_AUTHOR, {
@@ -40,49 +41,79 @@ function Add(props) {
   let body = null;
   if (props.type === 'author') {
     body = (
+
       <div className='card'>
-        <form className='form' id='add-author' onSubmit={onSubmitAuthor}>
-          <div className='form-group'>
-            <label>
-              Name:
-              <br />
-              <input id='name' required autoFocus={true} />
-            </label>
-          </div>
-          <br />
-          <div className='form-group'>
-            <label>
-              Bio:
-              <br />
-              <input id='bio' required />
-            </label>
-          </div>
-          <br />
-
-          <div className='form-group'>
-            <label>
-              Date of Birth:
-              <br />
-              <input id='dateOfBirth' required />
-            </label>
-          </div>
-
-          <br />
-          <br />
-          <button className='button add-button' type='submit'>
-            Add Author
-          </button>
-          <button
-            type='button'
-            className='button cancel-button'
-            onClick={() => {
-              document.getElementById('add-author').reset();
-              props.closeAddFormState();
+        <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
+          <Card
+            sx={{
+              width: '100%',
+              maxWidth: 500,
+              padding: 3,
+              borderRadius: 2,
+              boxShadow: 3
             }}
           >
-            Cancel
-          </button>
-        </form>
+            <form id="add-author" onSubmit={onSubmitAuthor}>
+              <Typography variant="h5" align="center" gutterBottom>
+                Add Author
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={3}>
+                <TextField
+                  id="name"
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  autoFocus
+                />
+                <TextField
+                  id="bio"
+                  label="Bio"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                />
+                <TextField
+                  id="dateOfBirth"
+                  label="Date of Birth"
+                  variant="outlined"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  required
+                />
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mt={3}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  fullWidth
+                  sx={{ mr: 1 }}
+                >
+                  Add Author
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="string"
+                  fullWidth
+                  sx={{ ml: 1 }}
+                  onClick={() => {
+                    document.getElementById('add-author').reset();
+                    props.closeAddFormState();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </form>
+          </Card>
+        </Box>
       </div>
     );
   }

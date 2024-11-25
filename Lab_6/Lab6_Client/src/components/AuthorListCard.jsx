@@ -10,10 +10,10 @@ import {
   Typography
 } from '@mui/material';
 
-function EventListCard({ event }) {
+function EventListCard({ author }) {
   const regex = /(<([^>]+)>)/gi;
   return (
-    <Grid item xs={12} sm={7} md={5} lg={4} xl={3} key={event.id}>
+    <Grid item xs={12} sm={7} md={5} lg={4} xl={3} key={author._id}>
       <Card
         variant='outlined'
         sx={{
@@ -28,22 +28,8 @@ function EventListCard({ event }) {
         }}
       >
         <CardActionArea>
-          <Link to={`/events/${event.id}`}>
-            <CardMedia
-              sx={{
-                height: '100%',
-                width: '100%'
-              }}
-              component='img'
-              image={
-                event.images && event.images[0].url
-                  ? event.images[0].url
-                  : noImage
-              }
-              title='show image'
-            />
-
-            <CardContent>
+          <CardContent>
+            <Link to={`/authors/${author._id}`}>
               <Typography
                 sx={{
                   borderBottom: '1px solid #1e8678',
@@ -53,41 +39,28 @@ function EventListCard({ event }) {
                 variant='h6'
                 component='h3'
               >
-                {event.name}
+                {author.name}
               </Typography>
-              <Typography variant='body2' color='textSecondary' component='p'>
-                <span>Start Date: </span>
-                {event && event.dates && event.dates.start ? (
-                  (event.dates.start.dateTBD
-                    ? 'TBD'
-                    : (event.dates.start.dateTBA
-                      ? 'TBA'
-                      : `${event.dates.start.localDate}`
-                    )
-                  )
-                ) : (
-                  'N/A'
-                )}
-
-                <br></br>
-                <span>Price Range: </span>
-                {event && event.priceRanges && event.priceRanges.length >= 1 ? (
-                  <span>
-                    {event.priceRanges.map((priceRange) => {
-                      if (event.priceRanges.length > 1)
-                        return <li key={priceRange.type}>{priceRange.type} : ${priceRange.min} - ${priceRange.max} ${priceRange.currency},</li>;
-                      return `${priceRange.type} : ${priceRange.min} - ${priceRange.max} ${priceRange.currency}`;
-                    })}
-                  </span>
-                ) : (
-                  'N/A'
-                )}
-                <br></br>
-                <span>More Info...</span>
-              </Typography>
-
-            </CardContent>
-          </Link>
+            </Link>
+            <Typography variant='body2' color='textSecondary' component='p'>
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 1, mr: 1 }}
+                onClick={() => handleOpenEditModal(author)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ mt: 1 }}
+                onClick={() => handleOpenDeleteModal(author)}
+              >
+                Delete
+              </Button>
+            </Typography>
+          </CardContent>
         </CardActionArea>
       </Card>
     </Grid >

@@ -5,6 +5,7 @@ import ReactModal from 'react-modal';
 //Import the file where my query constants are defined
 import queries from '../queries';
 import { useNavigate } from 'react-router-dom';
+import { Button, Typography, Box, TextField } from '@mui/material';
 
 //For react-modal
 ReactModal.setAppElement('#root');
@@ -65,9 +66,9 @@ function DeleteAuthorModal(props) {
 				information on Mutations
 			*/}
                 <div>
-                    <p>
-                        Are you sure you want to delete {author.name}?
-                    </p>
+                    <Typography variant="h6" align="center">
+                        Are you sure you want to delete "{author.name}"?
+                    </Typography>
 
                     <form
                         className='form'
@@ -88,22 +89,26 @@ function DeleteAuthorModal(props) {
                             }
                         }}
                     >
-                        <br />
-                        <br />
-                        <button className='button add-button' type='submit'>
-                            Delete Author
-                        </button>
+                        <Box>
+                            <Box display="flex" justifyContent="flex-end" gap={2}>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    type="submit"
+                                >
+                                    Delete Author
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="string"
+                                    onClick={handleCloseDeleteModal}
+                                >
+                                    Cancel
+                                </Button>
+                            </Box>
+                        </Box>
                     </form>
                 </div>
-
-                <br />
-                <br />
-                <button
-                    className='button cancel-button'
-                    onClick={handleCloseDeleteModal}
-                >
-                    Cancel
-                </button>
             </ReactModal>
         </div>
     );

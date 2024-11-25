@@ -6,7 +6,7 @@ import queries from '../queries';
 import { apiConfig } from '../api/ApiConfig'
 import EditAuthorModal from './EditAuthorModal';
 import DeleteAuthorModal from './DeleteAuthorModal';
-//import { Card, CardContent, CardHeader, CardMedia, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, Typography, Button, Box, CircularProgress, Grid } from '@mui/material';
 //import { OpenInNew, Link as LinkIcon } from '@mui/icons-material';
 
 
@@ -52,75 +52,88 @@ function AuthorDetail() {
 
         return (
             <div>
-                <br />
-                <br />
-                <div className='card' key={author.id}>
-                    <div className='card-body'>
-                        <h5 className='card-title'>
-                            {author.name}
-                        </h5>
-                        Bio: {author.bio}
-                        <br></br>
-                        Date of Birth : {author.dateOfBirth}
-                        <br />
-                        {author.books && author.books.map((book) => {
-                            return (
-                                <div className='card' key={book._id}>
-                                    <div className='card-body'>
-                                        <h5 className='card-title'>
-                                            <Link to={`/books/${book._id}`}>{book.title}</Link>
-                                        </h5>
-                                        <br />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                        <button
-                            className='button'
-                            onClick={() => {
-                                handleOpenEditModal(author);
-                            }}
+                <h2>Author</h2>
+                <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
+                    <Card sx={{ width: '100%', maxWidth: 600, mb: 3 }}>
+                        <CardHeader title={author.name} />
+                        <CardContent>
+                            <Typography variant="body1" >
+                                <strong>Date of Birth:</strong> {author.dateOfBirth}
+                            </Typography>
+                            <Typography variant="body1" >
+                                <strong>Bio:</strong> {author.bio}
+                            </Typography>
+
+                            <Typography variant="h6" gutterBottom>
+                                Books:
+                            </Typography>
+                            {author.books && author.books.length > 0 ? (
+                                <Grid container spacing={2}>
+                                    {author.books.map((book) => (
+                                        <Grid item xs={12} key={book._id}>
+                                            <Card sx={{ width: '100%' }}>
+                                                <CardContent>
+                                                    <Typography variant="body1">
+                                                        <Link to={`/books/${book._id}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
+                                                            {book.title}
+                                                        </Link>
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            ) : (
+                                <Typography variant="body2">No books available.</Typography>
+                            )}
+                        </CardContent>
+                    </Card>
+                    <Box display="flex" gap={2}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => handleOpenEditModal(author)}
                         >
-                            Edit
-                        </button>
-                        <button
-                            className='button'
-                            onClick={() => {
-                                handleOpenDeleteModal(author);
-                            }}
+                            Edit Author
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleOpenDeleteModal(author)}
                         >
                             Delete
-                        </button>
-                        <br />
-                    </div>
-                </div>
+                        </Button>
+                    </Box>
 
-                {
-                    showEditModal && (
+                    {showEditModal && (
                         <EditAuthorModal
                             isOpen={showEditModal}
                             author={editAuthor}
                             handleClose={handleCloseModals}
                         />
-                    )
-                }
+                    )}
 
-                {
-                    showDeleteModal && (
+                    {showDeleteModal && (
                         <DeleteAuthorModal
                             isOpen={showDeleteModal}
                             handleClose={handleCloseModals}
                             deleteAuthor={deleteAuthor}
                             isById={isById}
                         />
-                    )
-                }
+                    )}
+                </Box>
             </div>
         );
     } else if (loading) {
-        return <div>Loading</div>;
+        return (<Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Typography>Loading</Typography>
+        </Box>);
     } else if (error) {
-        return <div>{error.message}</div>;
+        return (
+            <Box display="flex" justifyContent="center" mt={5}>
+                <Typography color="error">Error: {error.message}</Typography>
+            </Box>
+        );
     }
 }
 

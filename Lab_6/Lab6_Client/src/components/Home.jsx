@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 function Home() {
     return (
         <div>
-            <h1>Welcome to Books Hub!</h1>
+            <h1>Welcome to Library Management System!</h1>
             {/* <h2>One stop for exploring events, attractions and venues across US.</h2>
             <p className='homePara'>
                 Planning your next adventure or just looking for something exciting to do? You've come to the right place!

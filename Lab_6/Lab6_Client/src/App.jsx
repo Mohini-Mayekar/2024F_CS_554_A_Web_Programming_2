@@ -14,12 +14,11 @@ import AuthorDetail from './components/AuthorDetail';
 // import NotFound from './components/NotFound';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <div className='App'>
       <header className='App-header'>
-        <h1 className='App-title'>Books Hub</h1>
+        <h1 className='App-title'>Library Management System</h1>
         <br />
         <br />
         <nav className='center'>
