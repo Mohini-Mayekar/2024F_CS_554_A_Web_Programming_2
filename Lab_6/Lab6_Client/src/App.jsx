@@ -7,11 +7,13 @@ import { Link, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import AuthorsList from './components/AuthorsList';
 import AuthorDetail from './components/AuthorDetail';
-// import PublishersList from './components/PublishersList';
-// import PublisherDetail from './components/PublisherDetail';
-// import BooksList from './components/BooksList';
-// import BookDetail from './components/BookDetail';
-// import NotFound from './components/NotFound';
+import PublishersList from './components/PublishersList';
+import PublisherDetail from './components/PublisherDetail';
+import BooksList from './components/BooksList';
+import BookDetail from './components/BookDetail';
+import ChapterDetail from './components/ChapterDetail';
+import NotFound from './components/NotFound';
+import Search from './components/Search';
 
 function App() {
 
@@ -34,6 +36,9 @@ function App() {
           <Link className='link' to='/books'>
             Books
           </Link>
+          <Link className='link' to='/search'>
+            Search
+          </Link>
         </nav>
       </header>
       <br />
@@ -42,12 +47,13 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path="/authors" element={<AuthorsList />} />
         <Route path="/authors/:id" element={<AuthorDetail />} />
-        {/* <Route path="/publishers" element={<PublishersList />} />
+        <Route path="/publishers" element={<PublishersList />} />
         <Route path="/publishers/:id" element={<PublisherDetail />} />
         <Route path="/books" element={<BooksList />} />
         <Route path="/books/:id" element={<BookDetail />} />
-        <Route path="/search" element={<Search />} /> */}
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="/chapters/:id" element={<ChapterDetail />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )

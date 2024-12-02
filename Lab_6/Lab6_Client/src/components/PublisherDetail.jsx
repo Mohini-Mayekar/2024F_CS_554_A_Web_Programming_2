@@ -8,18 +8,18 @@ import DeleteModal from './DeleteModal';
 import { Card, CardContent, CardHeader, Typography, Button, Box, Grid } from '@mui/material';
 
 
-function AuthorDetail() {
+function PublisherDetail() {
     const { id } = useParams();
-    const [author, setAuthor] = useState(null);
+    const [publisher, setPublisher] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [editAuthor, setEditAuthor] = useState(null);
-    const [deleteAuthor, setDeleteAuthor] = useState(null);
+    const [editPublisher, setEditPublisher] = useState(null);
+    const [deletePublisher, setDeletePublisher] = useState(null);
     const isById = true;
-    const attr = 'author';
+    const attr = 'publisher';
     //const [loading, setLoading] = useState(true);
 
-    const { loading, error, data } = useQuery(queries.GET_AUTHOR_BY_ID, {
+    const { loading, error, data } = useQuery(queries.GET_PUBLISHER_BY_ID, {
         variables: { id: id, }
         ,
         fetchPolicy: 'cache-and-network'
@@ -27,18 +27,18 @@ function AuthorDetail() {
 
     useEffect(() => {
         if (data) {
-            setAuthor(data.getAuthorById); // Only update the state when data changes
+            setPublisher(data.getPublisherById); // Only update the state when data changes
         }
     }, [data]);
 
-    const handleOpenEditModal = (author) => {
+    const handleOpenEditModal = (publisher) => {
         setShowEditModal(true);
-        setEditAuthor(author);
+        setEditPublisher(publisher);
     };
 
-    const handleOpenDeleteModal = (author) => {
+    const handleOpenDeleteModal = (publisher) => {
         setShowDeleteModal(true);
-        setDeleteAuthor(author);
+        setDeletePublisher(publisher);
     };
 
     const handleCloseModals = () => {
@@ -47,28 +47,28 @@ function AuthorDetail() {
     };
 
 
-    if (author) {
+    if (publisher) {
 
         return (
             <div>
-                <h2>Author</h2>
+                <h2>Publisher</h2>
                 <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
                     <Card sx={{ width: '100%', maxWidth: 600, mb: 3 }}>
-                        <CardHeader title={author.name} />
+                        <CardHeader title={publisher.name} />
                         <CardContent>
                             <Typography variant="body1" >
-                                <strong>Date of Birth:</strong> {author.dateOfBirth}
+                                <strong>Established Year:</strong> {publisher.establishedYear}
                             </Typography>
                             <Typography variant="body1" >
-                                <strong>Bio:</strong> {author.bio}
+                                <strong>Location:</strong> {publisher.location}
                             </Typography>
 
                             <Typography variant="h6" gutterBottom>
                                 Books:
                             </Typography>
-                            {author.books && author.books.length > 0 ? (
+                            {publisher.books && publisher.books.length > 0 ? (
                                 <Grid container spacing={2}>
-                                    {author.books.map((book) => (
+                                    {publisher.books.map((book) => (
                                         <Grid item xs={12} key={book._id}>
                                             <Card sx={{ width: '100%' }}>
                                                 <CardContent>
@@ -91,14 +91,14 @@ function AuthorDetail() {
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={() => handleOpenEditModal(author)}
+                            onClick={() => handleOpenEditModal(publisher)}
                         >
-                            Edit Author
+                            Edit
                         </Button>
                         <Button
                             variant="contained"
                             color="error"
-                            onClick={() => handleOpenDeleteModal(author)}
+                            onClick={() => handleOpenDeleteModal(publisher)}
                         >
                             Delete
                         </Button>
@@ -107,7 +107,7 @@ function AuthorDetail() {
                     {showEditModal && (
                         <EditModal
                             isOpen={showEditModal}
-                            author={editAuthor}
+                            publisher={editPublisher}
                             handleClose={handleCloseModals}
                             attr={attr}
                         />
@@ -117,7 +117,7 @@ function AuthorDetail() {
                         <DeleteModal
                             isOpen={showDeleteModal}
                             handleClose={handleCloseModals}
-                            deleteAuthor={deleteAuthor}
+                            deletePublisher={deletePublisher}
                             isById={isById}
                             attr={attr}
                         />
@@ -140,4 +140,4 @@ function AuthorDetail() {
     }
 }
 
-export default AuthorDetail;
+export default PublisherDetail;

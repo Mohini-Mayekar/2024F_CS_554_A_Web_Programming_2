@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import queries from '../queries';
 import Add from './Add.jsx';
-import EditModal from './EditModal.jsx';
-import DeleteModal from './DeleteModal.jsx';
+import EditAuthorModal from './EditModal.jsx';
+import DeleteAuthorModal from './DeleteModal.jsx';
 import { Link } from 'react-router-dom';
 import { Button, Card, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box } from '@mui/material';
 
 
-function AuthorsList() {
+function PublishersList() {
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [editAuthor, setEditAuthor] = useState(null);
-    const [deleteAuthor, setDeleteAuthor] = useState(null);
+    const [editPublisher, setEditPublisher] = useState(null);
+    const [deletePublisher, setDeletePublisher] = useState(null);
     const isById = false;
-    const attr = 'author';
+    const attr = 'publisher';
 
-    const { loading, error, data } = useQuery(queries.GET_AUTHORS
+    const { loading, error, data } = useQuery(queries.GET_PUBLISHERS
         , {
             fetchPolicy: 'cache-and-network'
         }
     );
-    const handleOpenEditModal = (author) => {
+    const handleOpenEditModal = (publisher) => {
         setShowEditModal(true);
-        setEditAuthor(author);
+        setEditPublisher(publisher);
     };
 
-    const handleOpenDeleteModal = (author) => {
+    const handleOpenDeleteModal = (publisher) => {
         setShowDeleteModal(true);
-        setDeleteAuthor(author);
+        setDeletePublisher(publisher);
     };
     const closeAddFormState = () => {
         setShowAddForm(false);
@@ -41,20 +41,20 @@ function AuthorsList() {
     };
 
     if (data) {
-        const { authors } = data;
+        const { publishers } = data;
         return (
             <div>
-                <h2>Authors</h2>
+                <h2>Publishers</h2>
                 <Button
                     variant="contained"
                     color="primary"
                     sx={{ mt: 1, mr: 1 }}
                     onClick={() => setShowAddForm(!showAddForm)}
                 >
-                    Add Author
+                    Add Publisher
                 </Button>
                 {showAddForm && (
-                    <Add type='author' closeAddFormState={closeAddFormState} />
+                    <Add type='publisher' closeAddFormState={closeAddFormState} />
                 )}
                 <br />
                 <br />
@@ -85,10 +85,10 @@ function AuthorsList() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {authors.map((author) => (
-                                    <TableRow key={author._id}>
+                                {publishers.map((publisher) => (
+                                    <TableRow key={publisher._id}>
                                         <TableCell>
-                                            <Link to={`/authors/${author._id}`}>
+                                            <Link to={`/publishers/${publisher._id}`}>
                                                 <Typography
                                                     sx={{
                                                         fontWeight: 'bold',
@@ -99,7 +99,7 @@ function AuthorsList() {
                                                     variant='h6'
                                                     component='h3'
                                                 >
-                                                    {author.name}
+                                                    {publisher.name}
                                                 </Typography>
                                             </Link>
                                         </TableCell>
@@ -108,7 +108,7 @@ function AuthorsList() {
                                                 variant="contained"
                                                 color="secondary"
                                                 sx={{ mt: 1, mr: 1 }}
-                                                onClick={() => handleOpenEditModal(author)}
+                                                onClick={() => handleOpenEditModal(publisher)}
                                             >
                                                 Edit
                                             </Button>
@@ -116,7 +116,7 @@ function AuthorsList() {
                                                 variant="contained"
                                                 color="error"
                                                 sx={{ mt: 1 }}
-                                                onClick={() => handleOpenDeleteModal(author)}
+                                                onClick={() => handleOpenDeleteModal(publisher)}
                                             >
                                                 Delete
                                             </Button>
@@ -127,20 +127,21 @@ function AuthorsList() {
                         </Table>
                     </TableContainer>
                 </Box>
+
                 {showEditModal && (
-                    <EditModal
+                    <EditAuthorModal
                         isOpen={showEditModal}
-                        author={editAuthor}
+                        publisher={editPublisher}
                         handleClose={handleCloseModals}
                         attr={attr}
                     />
                 )}
 
                 {showDeleteModal && (
-                    <DeleteModal
+                    <DeleteAuthorModal
                         isOpen={showDeleteModal}
                         handleClose={handleCloseModals}
-                        deleteAuthor={deleteAuthor}
+                        deletePublisher={deletePublisher}
                         isById={isById}
                         attr={attr}
                     />
@@ -164,4 +165,4 @@ function AuthorsList() {
 }
 
 
-export default AuthorsList;
+export default PublishersList;

@@ -231,19 +231,22 @@ export const resolvers = {
         author: async (parentValue) => {
             //console.log(`parentValue in Book`, parentValue);
             const authors = await authorCollection();
-            const author = await authors.findOne({ _id: parentValue.authorId });
+            const author = await authors.findOne({ _id: new ObjectId(parentValue.authorId) });
+            console.log('Book.author: ' + JSON.stringify(author));
             return author;
         },
         publisher: async (parentValue) => {
             //console.log(`parentValue in Book`, parentValue);
             const publishers = await publisherCollection();
-            const publisher = await publishers.findOne({ _id: parentValue.publisherId });
+            const publisher = await publishers.findOne({ _id: new ObjectId(parentValue.publisherId) });
+            console.log('Book.publisher: ' + JSON.stringify(publisher));
             return publisher;
         },
         chapters: async (parentValue) => {
             //console.log(`parentValue in Book:Chapter`, parentValue);
             const chapters = await chapterCollection();
-            const chapter = await chapters.find({ bookId: parentValue._id }).toArray();
+            const chapter = await chapters.find({ bookId: new ObjectId(parentValue._id) }).toArray();
+            console.log('Book.chapters: ' + JSON.stringify(chapter));
             return chapter;
         }
     },

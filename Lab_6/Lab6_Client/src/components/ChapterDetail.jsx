@@ -8,18 +8,18 @@ import DeleteModal from './DeleteModal';
 import { Card, CardContent, CardHeader, Typography, Button, Box, Grid } from '@mui/material';
 
 
-function AuthorDetail() {
+function ChapterDetail() {
     const { id } = useParams();
-    const [author, setAuthor] = useState(null);
+    const [chapter, setChapter] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [editAuthor, setEditAuthor] = useState(null);
-    const [deleteAuthor, setDeleteAuthor] = useState(null);
+    const [editChapter, setEditChapter] = useState(null);
+    const [deleteChapter, setDeleteChapter] = useState(null);
     const isById = true;
-    const attr = 'author';
+    const attr = 'chapter';
     //const [loading, setLoading] = useState(true);
 
-    const { loading, error, data } = useQuery(queries.GET_AUTHOR_BY_ID, {
+    const { loading, error, data } = useQuery(queries.GET_CHAPTER_BY_ID, {
         variables: { id: id, }
         ,
         fetchPolicy: 'cache-and-network'
@@ -27,18 +27,18 @@ function AuthorDetail() {
 
     useEffect(() => {
         if (data) {
-            setAuthor(data.getAuthorById); // Only update the state when data changes
+            setChapter(data.getChapterById); // Only update the state when data changes
         }
     }, [data]);
 
-    const handleOpenEditModal = (author) => {
+    const handleOpenEditModal = (chapter) => {
         setShowEditModal(true);
-        setEditAuthor(author);
+        setEditChapter(chapter);
     };
 
-    const handleOpenDeleteModal = (author) => {
+    const handleOpenDeleteModal = (chapter) => {
         setShowDeleteModal(true);
-        setDeleteAuthor(author);
+        setDeleteChapter(chapter);
     };
 
     const handleCloseModals = () => {
@@ -47,58 +47,48 @@ function AuthorDetail() {
     };
 
 
-    if (author) {
+    if (chapter) {
 
         return (
             <div>
-                <h2>Author</h2>
+                <h2>Chapter</h2>
                 <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
                     <Card sx={{ width: '100%', maxWidth: 600, mb: 3 }}>
-                        <CardHeader title={author.name} />
+                        <CardHeader title={chapter.title} />
                         <CardContent>
-                            <Typography variant="body1" >
-                                <strong>Date of Birth:</strong> {author.dateOfBirth}
-                            </Typography>
-                            <Typography variant="body1" >
-                                <strong>Bio:</strong> {author.bio}
-                            </Typography>
 
                             <Typography variant="h6" gutterBottom>
-                                Books:
-                            </Typography>
-                            {author.books && author.books.length > 0 ? (
+                                Book:
+
                                 <Grid container spacing={2}>
-                                    {author.books.map((book) => (
-                                        <Grid item xs={12} key={book._id}>
-                                            <Card sx={{ width: '100%' }}>
-                                                <CardContent>
-                                                    <Typography variant="body1">
-                                                        <Link to={`/books/${book._id}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
-                                                            {book.title}
-                                                        </Link>
-                                                    </Typography>
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ))}
+                                    <Grid item xs={12} key={chapter.book._id}>
+                                        <Card sx={{ width: '100%' }}>
+                                            <CardContent>
+                                                <Typography variant="body1">
+                                                    <Link to={`/books/${chapter.book._id}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
+                                                        {chapter.book.title}
+                                                    </Link>
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
                                 </Grid>
-                            ) : (
-                                <Typography variant="body2">No books available.</Typography>
-                            )}
+                            </Typography>
+
                         </CardContent>
                     </Card>
                     <Box display="flex" gap={2}>
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={() => handleOpenEditModal(author)}
+                            onClick={() => handleOpenEditModal(chapter)}
                         >
-                            Edit Author
+                            Edit
                         </Button>
                         <Button
                             variant="contained"
                             color="error"
-                            onClick={() => handleOpenDeleteModal(author)}
+                            onClick={() => handleOpenDeleteModal(chapter)}
                         >
                             Delete
                         </Button>
@@ -107,7 +97,7 @@ function AuthorDetail() {
                     {showEditModal && (
                         <EditModal
                             isOpen={showEditModal}
-                            author={editAuthor}
+                            chapter={editChapter}
                             handleClose={handleCloseModals}
                             attr={attr}
                         />
@@ -117,7 +107,7 @@ function AuthorDetail() {
                         <DeleteModal
                             isOpen={showDeleteModal}
                             handleClose={handleCloseModals}
-                            deleteAuthor={deleteAuthor}
+                            deleteChapter={deleteChapter}
                             isById={isById}
                             attr={attr}
                         />
@@ -140,4 +130,4 @@ function AuthorDetail() {
     }
 }
 
-export default AuthorDetail;
+export default ChapterDetail;

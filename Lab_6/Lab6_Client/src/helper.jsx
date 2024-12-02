@@ -1,15 +1,39 @@
-// You can add and export any helper functions you want here - if you aren't using any, then you can just leave this file as is
-import { GraphQLError } from 'graphql';
-import { ObjectId } from 'mongodb';
-import {
-    authors as authorCollection,
-    books as bookCollection,
-    publishers as publisherCollection,
-    chapters as chapterCollection
-} from './config/mongoCollections.js';
-import redis from 'redis';
-const client = redis.createClient();
-client.connect().then(() => { });
+//import { ObjectId } from 'mongodb';
+const dob_mmddyyyy_format = (dateOfBirth) => {
+    const [year, month, day] = dateOfBirth.split('-');
+    return `${month}/${day}/${year}`;
+
+};
+
+const dob_yyyymmdd_format = (dateOfBirth) => {
+    const [month, day, year] = dateOfBirth.split('/');
+    return `${year}-${month}-${day}`;
+
+};
+
+export const genre = (function () {
+    const genreEnum = Object.freeze({
+        FICTION: "fiction",
+        NON_FICTION: "non_fiction",
+        MYSTERY: "mystery",
+        FANTASY: "fantasy",
+        ROMANCE: "romance",
+        SCIENCE_FICTION: "science_fiction",
+        HORROR: "horror",
+        BIOGRAPHY: "biography"
+    });
+    return {
+        get: function (genre) {
+            return genreEnum[genre.toUpperCase()] || undefined;
+        }
+    };
+})();
+
+const validateGenre = (bookGenre) => {
+    if (genre.get(bookGenre) === undefined)
+        throw new Error('Invalid genre type passed.');
+    return bookGenre;
+}
 
 const namePattern = new RegExp(/^[a-zA-Z\s]{2,25}$/);
 const bookNameAndTitlePattern = new RegExp(/^(?=.*[A-Za-z0-9])[A-Za-z0-9](?:[A-Za-z0-9\s.,:;'&\-]*[A-Za-z0-9])?$/);
@@ -20,24 +44,26 @@ const NOT_FOUND = 'NOT_FOUND';
 const BAD_REQUEST = 'BAD_REQUEST';
 const validateRange = (min, max) => {
     if (min < 0) {
-        throwError(`min should  be greater than 0.`, BAD_REQUEST);
+        encounteredError(`Min Year should  be greater than 0.`, BAD_REQUEST);
     }
     if (min > max) {
-        throwError(`min should be less than or equal to max.`, BAD_REQUEST);
+        encounteredError(`Min Year should be less than or equal to Max Year.`, BAD_REQUEST);
     }
     let currYear = new Date().getFullYear;
     if (max > currYear + 5) {
-        throwError(`max cannot be greater than 5 years from the current year.`, BAD_REQUEST);
+        encounteredError(`Max Year cannot be greater than 5 years from the current year.`, BAD_REQUEST);
     }
 }
 
 const validateYear = (year) => {
     if (year < 0) {
-        throwError(`year should be greater than 0.`, BAD_REQUEST);
+        encounteredError(`year should be greater than 0.`, BAD_REQUEST);
     }
-    let currYear = new Date().getFullYear;
+    let currDate = Date.now();
+    let currYear = new Date(currDate).getFullYear();
+    console.log('currYear: ' + currYear);
     if (year > currYear) {
-        throwError(`year cannot be greater than current year.`, BAD_REQUEST);
+        encounteredError(`year cannot be greater than current year.`, BAD_REQUEST);
     }
     return year;
 }
@@ -83,10 +109,8 @@ const clearCache = async () => {
     await client.flushAll();
 }
 
-const throwError = (errMsg, codeTxt) => {
-    throw new GraphQLError(errMsg, {
-        extensions: { code: codeTxt }
-    });
+const encounteredError = (errMsg, codeTxt) => {
+    throw new Error(errMsg);
 }
 
 const addChapter = async (chapters, bookId) => {
@@ -99,7 +123,7 @@ const addChapter = async (chapters, bookId) => {
         };
         let insertedChapter = await books.insertOne(chapterObj);
         if (!insertedChapter.acknowledged || !insertedChapter.insertedId) {
-            throwError(`Could not Add Chapter`, INTERNAL_SERVER_ERROR);
+            encounteredError(`Could not Add Chapter`, INTERNAL_SERVER_ERROR);
         }
         const _id = insertedChapter.insertedId;
         await resolvers.Query.getChapterById(_, { _id });
@@ -110,38 +134,40 @@ let validateId = (id, variable) => {
     //checkUndefinedOrNull(id, variable);
     id = checkisValidString(id, variable);
     if (!ObjectId.isValid(id))
-        throwError(`invalid object ID.`, BAD_REQUEST);
+        encounteredError(`invalid object ID.`, BAD_REQUEST);
     return id;
 };
 
 let checkUndefinedOrNull = (obj, variable) => {
     if (obj === undefined || obj === null)
-        throwError(`All fields need to have valid values. Input for '${variable || 'provided variable'}' param is undefined or null.`, BAD_REQUEST);
+        encounteredError(`All fields need to have valid values. Input for '${variable || 'provided variable'}' param is undefined or null.`, BAD_REQUEST);
 };
 
 let checkisValidString = (str, variable) => {
     checkUndefinedOrNull(str, variable);
     //check input type is string
     if (typeof str !== 'string')
-        throwError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is not a string.`, BAD_REQUEST);
+        encounteredError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is not a string.`, BAD_REQUEST);
 
     //empty string or has only spaces
-    if ((str.replaceAll(/\s/g, '').length) === 0)
-        throwError(`Input '${variable || 'provided'}' string of value '${str}' has just spaces or is an empty string.`, BAD_REQUEST);
+    if (str != '') {
+        if ((str.replaceAll(/\s/g, '').length) === 0)
+            encounteredError(`Input '${variable || 'provided'}' string of value '${str}' has just spaces.`, BAD_REQUEST);//or is an empty string
+    }
     return str.trim();
 };
 
 let checkisValidName = (str, variable) => {
     str = checkisValidString(str, variable);
     if (!(namePattern.test(str)))
-        throwError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.`, BAD_REQUEST);
+        encounteredError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.`, BAD_REQUEST);
     return str;
 };
 
 let checkisValidTitle = (str, variable) => {
     str = checkisValidString(str, variable);
     if (!(bookNameAndTitlePattern.test(str)))
-        throwError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.`, BAD_REQUEST);
+        encounteredError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.`, BAD_REQUEST);
     return str;
 }
 
@@ -154,7 +180,7 @@ let checkisValidDate = (date, variable) => {
        */
     date = checkisValidString(date, variable);
     if (!(date.includes("/")) || !(((date.split("/")).length) === 3))
-        throwError(`Invalid date format '${date || 'provided'}'. '${variable}' expected format : 'mm/dd/yyyy'.`, BAD_REQUEST);
+        encounteredError(`Invalid date format '${date || 'provided'}'. '${variable}' expected format : 'mm/dd/yyyy'.`, BAD_REQUEST);
     let dateArr = date.split("/");
     let daysPerMonth = ['31', '28', '31', '30', '31', '30', '31', '31', '30', '31', '30', '31'];
     let months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
@@ -163,38 +189,39 @@ let checkisValidDate = (date, variable) => {
     for (let i in dateArr) {
         if (i < 2) {
             if (!(dateArr[i].length == 2))
-                throwError(`Invalid date format '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
+                encounteredError(`Invalid date format '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
             if (i == 0) {
                 //month
                 if (!(months.includes(dateArr[i])))
-                    throwError(`Invalid month passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
+                    encounteredError(`Invalid month passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
                 currMonth = parseInt(dateArr[i]);
             } else { //day
                 if ((parseInt(dateArr[i])) > (parseInt(daysPerMonth[currMonth - 1])))
-                    throwError(`Invalid day passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
+                    encounteredError(`Invalid day passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
             }
         } else { //year
-            if (!(dateArr[i].length == 4) || (dateArr[i] < 1000) || (dateArr[i] > (new Date(date).getFullYear())))
-                throwError(`Invalid year passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
+            if (!(dateArr[i].length == 4))// || (dateArr[i] < 1000) || (dateArr[i] > (new Date(date).getFullYear()))
+                encounteredError(`Invalid year passed in date '${date || 'provided'}'. '${variable}' expected format: 'mm/dd/yyyy'.`, BAD_REQUEST);
         }
     }
 
+
     if ((new Date(date)) > currDate)
-        throwError(`Invalid date '${date || 'provided'}'.It should be before or equal to today's date.`, BAD_REQUEST);
+        encounteredError(`Invalid '${variable}' date '${date || 'provided'}'.It should be before or equal to today's date.`, BAD_REQUEST);
     return date;
 };
 
 
 let checkisValidPublicationDate = (publicationDate, dateOfBirth) => {
     if ((new Date(publicationDate)) < (new Date(dateOfBirth)))
-        throwError(`Publication date of a book cannot be before Author's date of birth.`, BAD_REQUEST);
+        encounteredError(`Publication date of a book cannot be before Author's date of birth.`, BAD_REQUEST);
 }
 
 
 let checkisValidPublication = (publicationDate, establishedYear) => {
     let year = new Date(publicationDate).getFullYear();
     if (year < establishedYear)
-        throwError(`Publication date of a book cannot be before publisher's established year.`, BAD_REQUEST);
+        encounteredError(`Publication date of a book cannot be before publisher's established year.`, BAD_REQUEST);
 }
 const deleteChaptersByBookId = async (chapters, bookId) => {
     const chapter = await chapterCollection();
@@ -207,7 +234,7 @@ const deleteChaptersByBookId = async (chapters, bookId) => {
             }
             const deleteChaptersByBookId = await chapter.deleteMany({ bookId: bookId });
             if (!deleteChaptersByBookId) {
-                throwError(`Could not delete chapters for book with _id of ${bookId}`, NOT_FOUND);
+                encounteredError(`Could not delete chapters for book with _id of ${bookId}`, NOT_FOUND);
             }
             await deleteFromCache('chapters:{' + bookId + '}');
         }
@@ -217,7 +244,7 @@ const deleteChaptersByBookId = async (chapters, bookId) => {
 const checkisValidLocation = (str, variable) => {
     str = checkisValidString(str, variable);
     if (!(locationPattern.test(str)))
-        throwError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.Expected pattern "city, State". For example: "Hoboken, New Jersey".`, BAD_REQUEST);
+        encounteredError(`Input '${variable || 'provided'}' of value '${str || 'provided variable'}' is invalid.Expected pattern "city, State". For example: "Hoboken, New Jersey".`, BAD_REQUEST);
     return str;
 }
 
@@ -266,13 +293,14 @@ const validateUniqueChapters = async (book, inputTitle) => {
     for (const i in book.chapters) {
         let currChapter = await chapter.findOne({ _id: new ObjectId(book.chapters[i]) });
         if (currChapter && currChapter.title === inputTitle) {
-            throwError(`Duplicate title passed in input. Titles within a book should be unique.`, BAD_REQUEST);
+            encounteredError(`Duplicate title passed in input. Titles within a book should be unique.`, BAD_REQUEST);
         }
     }
 }
 
 export {
-    validateRange, ifExist, cacheData, throwError, INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, deleteFromCache, validateId, checkisValidDate,
+    dob_mmddyyyy_format, dob_yyyymmdd_format, validateGenre, validateRange, ifExist, cacheData, encounteredError as throwError, INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST, deleteFromCache, validateId, checkisValidDate,
     checkisValidName, checkisValidString, deleteChaptersByBookId, checkisValidLocation, updateAuthor, updatePublisher, removeIdFromArray, updateBook,
     checkisValidTitle, validateUniqueChapters, validateYear, clearCache, checkisValidPublicationDate, checkisValidPublication, deleteKeyMatches
 }
+

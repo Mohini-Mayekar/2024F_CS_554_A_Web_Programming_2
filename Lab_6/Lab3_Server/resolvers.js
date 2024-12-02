@@ -16,20 +16,6 @@ import {
     chapters as chapterCollection
 } from './config/mongoCollections.js';
 
-
-import { v4 as uuid } from 'uuid'; //for generating _id's
-
-/* parentValue - References the type def that called it
-    so for example when we execute numOfEmployees we can reference
-    the parent's properties with the parentValue Paramater
-*/
-
-/* args - Used for passing any arguments in from the client
-    for example, when we call 
-    addEmployee(firstName: String!, lastName: String!, employerId: Int!): Employee
-    	
-*/
-
 export const resolvers = {
     Query: {
         authors: async () => {
@@ -49,14 +35,17 @@ export const resolvers = {
         books: async () => {
             const booksList = await ifExist('books');
             if (booksList) {
+                //console.log('booksList:  ' + JSON.stringify(booksList));
                 return booksList;
             }
             console.log('fetch');
             const books = await bookCollection();
             const allBooks = await books.find({}).toArray();
             if (!allBooks) {
+                console.error('Error:  ');
                 throwError(`Internal Server Error`, INTERNAL_SERVER_ERROR);
             }
+            //console.log('allBooks:  ' + JSON.stringify(allBooks));
             await cacheData('books', allBooks, 3600);
             return allBooks;
         },
@@ -122,18 +111,18 @@ export const resolvers = {
         },
         getChaptersByBookId: async (_, args) => {
             args.bookId = validateId(args.bookId, 'bookId id');
-            /*  let chaptersByBookId = await ifExist('chapters:book:{' + args.bookId + '}');
-              if (chaptersByBookId) {
-                  return chaptersByBookId;
-              }*/
+
             console.log('fetch');
+            console.log('bookId id: ' + args.bookId);
             const chapter = await chapterCollection();
             const bookChapters = await chapter.find({ bookId: new ObjectId(args.bookId) }).toArray();
             if (!bookChapters) {
+                console.log('ERROR chaptersByBookId: ');
                 throwError(`Book Not Found`, NOT_FOUND);
             }
-            let chaptersByBookId = bookChapters ? bookChapters.chapters : [];
-            // await cacheData('chapters:book:{' + args.bookId + '}', chaptersByBookId, 3600);
+            console.log('chaptersByBookId: ' + JSON.stringify(bookChapters));
+            let chaptersByBookId = bookChapters ? bookChapters : [];
+            console.log('chaptersByBookId: ' + chaptersByBookId);
             return chaptersByBookId;
         },
         booksByGenre: async (_, args) => {
@@ -166,7 +155,7 @@ export const resolvers = {
             return publisher;
         },
         searchAuthorByName: async (_, args) => {
-            args.searchTerm = checkisValidString(args.searchTerm);
+            args.searchTerm = checkisValidString(args.searchTerm, 'searchTerm');
             const authorsByName = await ifExist('search:author:{' + args.searchTerm + '}');
             if (authorsByName) {
                 return authorsByName;
@@ -197,97 +186,92 @@ export const resolvers = {
         },
         getChapterById: async (_, args) => {
             args._id = validateId(args._id, 'chapter id');
-            /* const chapterById = await ifExist('chapter:{' + args._id + '}');
-             if (chapterById) {
-                 return chapterById;
-             }*/
+
             console.log('fetch');
             const chapters = await chapterCollection();
             const chapter = await chapters.findOne({ _id: new ObjectId(args._id) });
             if (!chapter) {
                 throwError(`Chapter Not Found`, NOT_FOUND);
             }
-            //await cacheData('chapter:{' + args._id + '}', chapter);
+
             return chapter;
         },
         searchChapterByTitle: async (_, args) => {
-            args.searchTerm = checkisValidString(args.searchTerm);
-            /*  const chapterByTitle = await ifExist('search:chapter:{' + args.searchTitleTerm + '}');
-              if (chapterByTitle) {
-                  return chapterByTitle;
-              }*/
+            args.searchTitleTerm = checkisValidString(args.searchTitleTerm);
             console.log('fetch');
             const chapters = await chapterCollection();
             const chaptersList = await chapters.find({ title: { $regex: args.searchTitleTerm, $options: 'i' } }).toArray();
             if (!chaptersList) {
                 throwError(`No chapter found for the given title.`, NOT_FOUND);
             }
-            // await cacheData('search:chapter:{' + args.searchTitleTerm + '}', chaptersList, 3600);//??
             return chaptersList;
         }
     },
 
     Book: {
         author: async (parentValue) => {
-            //console.log(`parentValue in Book`, parentValue);
+            //console.log('Book.auth' + JSON.stringify(parentValue));
             const authors = await authorCollection();
-            const author = await authors.findOne({ _id: parentValue.authorId });
+            const author = await authors.findOne({ _id: new ObjectId(parentValue.authorId) });
+            //console.log('Book.author' + JSON.stringify(author));
             return author;
         },
         publisher: async (parentValue) => {
-            //console.log(`parentValue in Book`, parentValue);
+            //console.log('Book.publisher' + JSON.stringify(parentValue));
             const publishers = await publisherCollection();
-            const publisher = await publishers.findOne({ _id: parentValue.publisherId });
+            const publisher = await publishers.findOne({ _id: new ObjectId(parentValue.publisherId) });
+            //console.log('Book.publisher' + JSON.stringify(publisher));
             return publisher;
         },
         chapters: async (parentValue) => {
-            //console.log(`parentValue in Book:Chapter`, parentValue);
+            //console.log('Book.chapters' + JSON.stringify(parentValue));
             const chapters = await chapterCollection();
-            const chapter = await chapters.find({ bookId: parentValue._id }).toArray();
+            const chapter = await chapters.find({ bookId: new ObjectId(parentValue._id) }).toArray();
+            //console.log('Book.chapter' + JSON.stringify(chapter));
             return chapter;
         }
     },
     Author: {
         books: async (parentValue) => {
-            //console.log(`parentValue in Author`, parentValue);
+            //console.log('Author.books' + JSON.stringify(parentValue));
             const book = await bookCollection();
             const books = await book
-                .find({ authorId: parentValue._id })
+                .find({ authorId: new ObjectId(parentValue._id) })
                 .toArray();
             return books;
         },
         numOfBooks: async (parentValue) => {
-            //console.log(`parentValue in Author`, parentValue);
+            //console.log('Author.numOfBooks' + JSON.stringify(parentValue));
             const books = await bookCollection();
             const numOfBooks = await books.count({
-                authorId: parentValue._id
+                authorId: new ObjectId(parentValue._id)
             });
             return numOfBooks;
         }
     },
     Publisher: {
         books: async (parentValue) => {
-            //console.log(`parentValue in Publisher`, parentValue);
+            //console.log('Publisher.books' + JSON.stringify(parentValue));
             const book = await bookCollection();
             const books = await book
-                .find({ publisherId: parentValue._id })
+                .find({ publisherId: new ObjectId(parentValue._id) })
                 .toArray();
             return books;
         },
         numOfBooks: async (parentValue) => {
-            //console.log(`parentValue in Publisher`, parentValue);
+            //console.log('Publisher.numOfBooks' + JSON.stringify(parentValue));
             const books = await bookCollection();
             const numOfBooks = await books.count({
-                publisherId: parentValue._id
+                publisherId: new ObjectId(parentValue._id)
             });
             return numOfBooks;
         }
     },
     Chapter: {
         book: async (parentValue) => {
-            //console.log(`parentValue in Chapter`, parentValue);
+            //console.log('Chapter.book' + JSON.stringify(parentValue));
             const book = await bookCollection();
-            const books = await book.findOne({ _id: parentValue.bookId });
+            const books = await book.findOne({ _id: new ObjectId(parentValue.bookId) });
             return books;
         }
     },
@@ -296,7 +280,7 @@ export const resolvers = {
         addAuthor: async (_, args) => {
             //Input validation            
             if (args.name) {
-                args.name = checkisValidName(args.name);
+                args.name = checkisValidName(args.name, 'name');
             } if (args.bio) {
                 args.bio = checkisValidString(args.bio, 'bio');
             }
@@ -406,7 +390,7 @@ export const resolvers = {
         addPublisher: async (_, args) => {
             //Input validation            
             if (args.name) {
-                args.name = checkisValidName(args.name);
+                args.name = checkisValidName(args.name, 'name');
             } if (args.establishedYear) {
                 args.establishedYear = validateYear(args.establishedYear);
             }
@@ -697,10 +681,6 @@ export const resolvers = {
             await resolvers.Query.getPublisherById(_, { _id });
 
             await clearCache();
-            // await deleteFromCache('book:{' + args._id + '}');
-            // await deleteFromCache('books');
-            // await deleteFromCache('authors');
-            // await deleteFromCache('publishers');
             return deletedBook;
         },
         addChapter: async (_, args) => {
@@ -799,8 +779,6 @@ export const resolvers = {
             if (!editedChapter) {
                 throwError(`Could not edit Chapter`, NOT_FOUND);
             }
-
-            // await deleteFromCache('chapters:book:{' + args.bookId + '}');
             return await resolvers.Query.getChapterById(_, { _id });
         },
         removeChapter: async (_, args) => {
@@ -820,8 +798,6 @@ export const resolvers = {
             await resolvers.Query.getBookById(_, { _id });
             await deleteFromCache('books');
             return await chapter.findOneAndDelete({ _id: new ObjectId(args._id) });
-            // await deleteFromCache('chapter:{' + args._id + '}');
-            // await deleteFromCache('chapters:book:{' + args.bookId + '}');
         }
     }
 };
